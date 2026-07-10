@@ -6,6 +6,7 @@ use App\Http\Controllers\EstadoReservaController;
 use App\Http\Controllers\ZonasController;
 use App\Http\Controllers\EstadoEspaciosController;
 use App\Http\Controllers\TipoEspaciosController;
+use App\Http\Controllers\EspaciosController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -52,3 +53,13 @@ Route::get('/tipoEspacios', function () {
 Route::get('/tipoEspacios/{id}', [TipoEspaciosController::class, 'show']);
 
 Route::post('/tipoEspacios', [TipoEspaciosController::class, 'store']);
+
+
+Route::get('/espacios', function () {
+    return view('espacios');
+});
+
+
+Route::get('/espacios/{id}', [EspaciosController::class, 'show']);
+
+Route::post('/espacios', [EspaciosController::class, 'store']);
