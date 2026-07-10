@@ -1,5 +1,5 @@
 let markedId = 0;
-let tablaTipoReserva = null;
+let tablaEstadoReserva = null;
 
 $.ajaxSetup({
     headers: {
@@ -19,10 +19,11 @@ $(document).ready(function () {
 
 function cargarTabla() {
 
-    tablaTipoReserva = $('#tabla').DataTable({
+    tablaEstadoReserva = $('#tabla').DataTable({
 
         processing: true,
         destroy: true,
+
         language: {
             decimal: "",
             emptyTable: "No hay datos disponibles",
@@ -41,42 +42,31 @@ function cargarTabla() {
                 previous: "Anterior"
             }
         },
+
         ajax: {
-            url: '/tipoReserva/@',
+            url: '/estadoReserva/@',
             dataSrc: 'data'
         },
-        initComplete: function () {
 
-            $('#tabla thead th').eq(2).css('text-align', 'center');
-
-            $('#tabla thead th').eq(3).css('text-align', 'center');
-
-        },
         columns: [
+
             {
                 data: null,
-                render(data, type, row, meta) {
+                render: function (data, type, row, meta) {
                     return meta.row + 1;
                 }
             },
 
-            { data: 'nombre', className: 'text-left' },
+            {
+                data: 'nombre',
+                className: 'text-left'
+            },
 
             {
-                data: 'color',
-                className: 'text-center',
+                data: null,
                 render: function (data) {
 
-                    return `
-                        <div style="
-                            width:25px;
-                            height:25px;
-                            background:${data};
-                            border-radius:50%;
-                            margin:auto;
-                            border:1px solid #999;">
-                        </div>
-                    `;
+                    return data.ocupado == 1 ? 'SI' : 'NO';
 
                 }
             },
@@ -85,6 +75,7 @@ function cargarTabla() {
                 data: null,
                 orderable: false,
                 className: 'text-center',
+
                 render: function (_, _, row) {
 
                     let button = '<center>';
@@ -92,10 +83,10 @@ function cargarTabla() {
                     button += '<div class="btn-group btn-group-default">';
 
                     button += '<button class="btn btn-default" type="button">';
-                    button += '<i class="fa fa-bars" aria-hidden="true"></i>';
+                    button += '<i class="fa fa-bars"></i>';
                     button += '</button>';
 
-                    button += '<button data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button">';
+                    button += '<button class="btn btn-default dropdown-toggle" data-toggle="dropdown">';
                     button += '<span class="caret"></span>';
                     button += '</button>';
 
@@ -103,7 +94,7 @@ function cargarTabla() {
 
                     button += '<li class="btn-warning">';
                     button += '<button class="btn btn-link" style="color:white;" onclick="editItem(' + row.id + ')">';
-                    button += '<i class="fa fa-pencil-square-o" aria-hidden="true"></i> Editar';
+                    button += '<i class="fa fa-pencil-square-o"></i> Editar';
                     button += '</button>';
                     button += '</li>';
 
@@ -114,7 +105,9 @@ function cargarTabla() {
                     button += '</center>';
 
                     return button;
+
                 }
+
             }
 
         ]
@@ -127,47 +120,56 @@ function createItem() {
 
     markedId = null;
 
-    const form = document.getElementById('formGuardarTipoReserva');
+    const form = document.getElementById('formGuardarEstadoReserva');
 
     form.innerHTML = '';
 
     form.innerHTML = `
+
         <div class="col-12 col-md-12">
 
             <div class="row">
 
                 <div class="form-group col-md-8">
 
-                    <label class="obligatorio text-left">
+                    <label class="obligatorio">
                         Nombre
                     </label>
 
                     <input
                         type="text"
                         class="form-control text-center"
-                        id="tipoReservaNombre"
-                        placeholder="Ej: Sala de juntas">
+                        id="estadoReserva">
 
                 </div>
 
                 <div class="form-group col-md-4">
 
-                    <label class="obligatorio">
-                        Color
+                    <label>
+                        Ocupado
                     </label>
 
-                    <input
-                        type="color"
-                        class="form-control"
-                        id="tipoReservaColor"
-                        value="#2196F3">
+                    <div>
+
+                        <label class="switch">
+
+                            <input id="ocupado" type="checkbox">
+
+                            <span class="slider round"></span>
+
+                        </label>
+
+                    </div>
 
                 </div>
 
             </div>
 
         </div>
+
     `;
+
+    $('#ocupado').prop('checked', false);
 
     $('#accionar').prop('disabled', false);
 
@@ -175,60 +177,9 @@ function createItem() {
 
 }
 
-function save() {
-
-    $('#accionar').prop('disabled', true);
-
-    $.ajax({
-
-        type: 'POST',
-
-        url: '/tipoReserva',
-
-        data: {
-
-            id: markedId,
-
-            nombre: $('#tipoReservaNombre').val(),
-
-            color: $('#tipoReservaColor').val()
-
-        },
-
-        success: function (response) {
-
-            $('#config').modal('hide');
-
-            tablaTipoReserva.ajax.reload();
-
-            Lobibox.notify('success', {
-                title: response.message,
-                showClass: 'fadeInDown',
-                hideClass: 'fadeUpDown',
-                delay: 15000,
-                sound: false,
-                icon: false,
-                width: 400
-            });
-
-        },
-
-        error: function (response) {
-
-            $('#accionar').prop('disabled', false);
-
-            alert('Error al guardar');
-
-        }
-
-    });
-
-}
-
 function isValid() {
 
-    const nombre = $('#tipoReservaNombre').val();
-    const color = $('#tipoReservaColor').val();
+    const nombre = $('#estadoReserva').val();
 
     let valid = true;
 
@@ -242,26 +193,30 @@ function isValid() {
 
     }
 
-    if (!color) {
-
-        valid = false;
-
-        mensajes.push('Debe seleccionar un color.');
-
-    }
-
     if (!valid) {
+
         Lobibox.notify('error', {
+
             title: 'No se pudo aplicar los cambios',
-            msg: messages.join('<br>'),
+
+            msg: mensajes.join('<br>'),
+
             showClass: 'fadeInDown',
+
             hideClass: 'fadeUpDown',
+
             delay: 15000,
+
             sound: false,
+
             icon: false,
+
             width: 400
+
         });
+
     }
+
     return valid;
 
 }
@@ -278,74 +233,182 @@ function handleButtonSave() {
 
 }
 
+function save() {
+
+    $('#accionar').prop('disabled', true);
+
+    $.ajax({
+
+        type: 'POST',
+
+        url: '/estadoReserva',
+
+        data: {
+
+            id: markedId,
+
+            nombre: $('#estadoReserva').val(),
+
+            ocupado: $('#ocupado').is(':checked') ? 1 : 0
+
+        },
+
+        success: function (response) {
+
+            $('#config').modal('hide');
+
+            tablaEstadoReserva.ajax.reload();
+
+            Lobibox.notify('success', {
+
+                title: response.message,
+
+                showClass: 'fadeInDown',
+
+                hideClass: 'fadeUpDown',
+
+                delay: 15000,
+
+                sound: false,
+
+                icon: false,
+
+                width: 400
+
+            });
+
+        },
+
+        error: function (response) {
+
+            $('#accionar').prop('disabled', false);
+
+            Lobibox.notify('error', {
+
+                title: 'Error',
+
+                msg: response.responseJSON?.message ?? 'Ocurrió un error.',
+
+                showClass: 'fadeInDown',
+
+                hideClass: 'fadeUpDown',
+
+                delay: 15000,
+
+                sound: false,
+
+                icon: false,
+
+                width: 400
+
+            });
+
+        }
+
+    });
+
+}
 
 function editItem(id) {
 
     markedId = id;
 
     $.ajax({
+
         type: 'GET',
-        url: '/tipoReserva/' + id,
+
+        url: '/estadoReserva/' + id,
 
         success: function (response) {
 
-            showTipoReserva(response.data);
+            showEstadoReserva(response.data);
 
             $('#config').modal('show');
 
         },
 
-        error: function (response) {
-
-            console.log(response);
+        error: function () {
 
             Lobibox.notify('error', {
-                title: response.message,
+
+                title: 'No fue posible consultar la información.',
+
                 showClass: 'fadeInDown',
+
                 hideClass: 'fadeUpDown',
+
                 delay: 15000,
+
                 sound: false,
+
                 icon: false,
+
                 width: 400
+
             });
+
         }
-
-
 
     });
 
 }
 
-function showTipoReserva(tipo) {
+function showEstadoReserva(estado) {
 
-    const form = document.getElementById('formGuardarTipoReserva');
+    const form = document.getElementById('formGuardarEstadoReserva');
 
     form.innerHTML = `
+
         <div class="col-12 col-md-12">
+
             <div class="row">
 
                 <div class="form-group col-md-8">
-                    <label class="obligatorio">Nombre</label>
+
+                    <label class="obligatorio">
+
+                        Nombre
+
+                    </label>
+
                     <input
                         type="text"
                         class="form-control text-center"
-                        id="tipoReservaNombre">
+                        id="estadoReserva">
+
                 </div>
 
-                <div class="form-group col-md-4 text-center">
-                    <label class="obligatorio">Color</label>
-                    <input
-                        type="color"
-                        class="form-control"
-                        id="tipoReservaColor">
+                <div class="form-group col-md-4">
+
+                    <label>
+
+                        Ocupado
+
+                    </label>
+
+                    <div>
+
+                        <label class="switch">
+
+                            <input id="ocupado" type="checkbox">
+
+                            <span class="slider round"></span>
+
+                        </label>
+
+                    </div>
+
                 </div>
 
             </div>
+
         </div>
+
     `;
 
-    $('#tipoReservaNombre').val(tipo.nombre);
-    $('#tipoReservaColor').val(tipo.color);
+    $('#estadoReserva').val(estado.nombre);
+
+    $('#ocupado').prop('checked', estado.ocupado == 1);
 
     $('#accionar').prop('disabled', false);
 

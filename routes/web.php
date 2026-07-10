@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TipoReservaController;
+use App\Http\Controllers\EstadoReservaController;
+use App\Http\Controllers\ZonasController;
+use App\Http\Controllers\EstadoEspaciosController;
+use App\Http\Controllers\TipoEspaciosController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -13,5 +17,38 @@ Route::get('/tipoReserva', function () {
 
 Route::get('/tipoReserva/{id}', [TipoReservaController::class, 'show']);
 
-Route::post('/tipoReserva', [TipoReservaController::class, 'store']);
+Route::post('/tipoReserva', [EstadoReservaController::class, 'store']);
 
+
+Route::get('/zonas', function () {
+    return view('zonas');
+});
+
+Route::get('/zonas/{id}', [ZonasController::class, 'show']);
+
+Route::post('/zonas', [ZonasController::class, 'store']);
+
+
+Route::get('/estadoReserva', function () {
+    return view('estadoReserva');
+});
+
+Route::get('/estadoReserva/{id}', [EstadoReservaController::class, 'show']);
+
+Route::post('/estadoReserva', [EstadoReservaController::class, 'store']);
+
+Route::get('/estadoEspacios', function () {
+    return view('estadoEspacios');
+});
+
+Route::get('/estadoEspacios/{id}', [EstadoEspaciosController::class, 'show']);
+
+Route::post('/estadoEspacios', [EstadoEspaciosController::class, 'store']);
+
+Route::get('/tipoEspacios', function () {
+    return view('tipoEspacios');
+});
+
+Route::get('/tipoEspacios/{id}', [TipoEspaciosController::class, 'show']);
+
+Route::post('/tipoEspacios', [TipoEspaciosController::class, 'store']);

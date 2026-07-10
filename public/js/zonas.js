@@ -1,5 +1,5 @@
 let markedId = 0;
-let tablaTipoReserva = null;
+let tablaZona = null;
 
 $.ajaxSetup({
     headers: {
@@ -19,10 +19,11 @@ $(document).ready(function () {
 
 function cargarTabla() {
 
-    tablaTipoReserva = $('#tabla').DataTable({
+    tablaZona = $('#tabla').DataTable({
 
         processing: true,
         destroy: true,
+
         language: {
             decimal: "",
             emptyTable: "No hay datos disponibles",
@@ -41,50 +42,31 @@ function cargarTabla() {
                 previous: "Anterior"
             }
         },
+
         ajax: {
-            url: '/tipoReserva/@',
+            url: '/zonas/@',
             dataSrc: 'data'
         },
-        initComplete: function () {
 
-            $('#tabla thead th').eq(2).css('text-align', 'center');
-
-            $('#tabla thead th').eq(3).css('text-align', 'center');
-
-        },
         columns: [
+
             {
                 data: null,
-                render(data, type, row, meta) {
+                render: function (data, type, row, meta) {
                     return meta.row + 1;
                 }
             },
 
-            { data: 'nombre', className: 'text-left' },
-
             {
-                data: 'color',
-                className: 'text-center',
-                render: function (data) {
-
-                    return `
-                        <div style="
-                            width:25px;
-                            height:25px;
-                            background:${data};
-                            border-radius:50%;
-                            margin:auto;
-                            border:1px solid #999;">
-                        </div>
-                    `;
-
-                }
+                data: 'nombre',
+                className: 'text-left'
             },
 
             {
                 data: null,
                 orderable: false,
                 className: 'text-center',
+
                 render: function (_, _, row) {
 
                     let button = '<center>';
@@ -127,7 +109,7 @@ function createItem() {
 
     markedId = null;
 
-    const form = document.getElementById('formGuardarTipoReserva');
+    const form = document.getElementById('formGuardarZona');
 
     form.innerHTML = '';
 
@@ -136,7 +118,7 @@ function createItem() {
 
             <div class="row">
 
-                <div class="form-group col-md-8">
+                <div class="form-group col-md-12">
 
                     <label class="obligatorio text-left">
                         Nombre
@@ -145,22 +127,8 @@ function createItem() {
                     <input
                         type="text"
                         class="form-control text-center"
-                        id="tipoReservaNombre"
-                        placeholder="Ej: Sala de juntas">
-
-                </div>
-
-                <div class="form-group col-md-4">
-
-                    <label class="obligatorio">
-                        Color
-                    </label>
-
-                    <input
-                        type="color"
-                        class="form-control"
-                        id="tipoReservaColor"
-                        value="#2196F3">
+                        id="tipoZona"
+                        placeholder="Ej: Cancha de Fútbol">
 
                 </div>
 
@@ -175,6 +143,51 @@ function createItem() {
 
 }
 
+function isValid() {
+
+    const nombre = $('#tipoZona').val();
+
+    let valid = true;
+
+    let mensajes = [];
+
+    if (!nombre) {
+
+        valid = false;
+
+        mensajes.push('El nombre es obligatorio.');
+
+    }
+
+    if (!valid) {
+
+        Lobibox.notify('error', {
+            title: 'No se pudo aplicar los cambios',
+            msg: mensajes.join('<br>'),
+            showClass: 'fadeInDown',
+            hideClass: 'fadeUpDown',
+            delay: 15000,
+            sound: false,
+            icon: false,
+            width: 400
+        });
+
+    }
+
+    return valid;
+
+}
+
+function handleButtonSave() {
+
+    if (!isValid()) {
+        return;
+    }
+
+    save();
+
+}
+
 function save() {
 
     $('#accionar').prop('disabled', true);
@@ -183,15 +196,13 @@ function save() {
 
         type: 'POST',
 
-        url: '/tipoReserva',
+        url: '/zonas',
 
         data: {
 
             id: markedId,
 
-            nombre: $('#tipoReservaNombre').val(),
-
-            color: $('#tipoReservaColor').val()
+            nombre: $('#tipoZona').val()
 
         },
 
@@ -199,7 +210,7 @@ function save() {
 
             $('#config').modal('hide');
 
-            tablaTipoReserva.ajax.reload();
+            tablaZona.ajax.reload();
 
             Lobibox.notify('success', {
                 title: response.message,
@@ -217,90 +228,9 @@ function save() {
 
             $('#accionar').prop('disabled', false);
 
-            alert('Error al guardar');
-
-        }
-
-    });
-
-}
-
-function isValid() {
-
-    const nombre = $('#tipoReservaNombre').val();
-    const color = $('#tipoReservaColor').val();
-
-    let valid = true;
-
-    let mensajes = [];
-
-    if (!nombre) {
-
-        valid = false;
-
-        mensajes.push('El nombre es obligatorio.');
-
-    }
-
-    if (!color) {
-
-        valid = false;
-
-        mensajes.push('Debe seleccionar un color.');
-
-    }
-
-    if (!valid) {
-        Lobibox.notify('error', {
-            title: 'No se pudo aplicar los cambios',
-            msg: messages.join('<br>'),
-            showClass: 'fadeInDown',
-            hideClass: 'fadeUpDown',
-            delay: 15000,
-            sound: false,
-            icon: false,
-            width: 400
-        });
-    }
-    return valid;
-
-}
-
-function handleButtonSave() {
-
-    if (!isValid()) {
-
-        return;
-
-    }
-
-    save();
-
-}
-
-
-function editItem(id) {
-
-    markedId = id;
-
-    $.ajax({
-        type: 'GET',
-        url: '/tipoReserva/' + id,
-
-        success: function (response) {
-
-            showTipoReserva(response.data);
-
-            $('#config').modal('show');
-
-        },
-
-        error: function (response) {
-
-            console.log(response);
-
             Lobibox.notify('error', {
-                title: response.message,
+                title: 'Error',
+                msg: response.responseJSON?.message ?? 'Ocurrió un error.',
                 showClass: 'fadeInDown',
                 hideClass: 'fadeUpDown',
                 delay: 15000,
@@ -308,44 +238,80 @@ function editItem(id) {
                 icon: false,
                 width: 400
             });
+
         }
-
-
 
     });
 
 }
 
-function showTipoReserva(tipo) {
+function editItem(id) {
 
-    const form = document.getElementById('formGuardarTipoReserva');
+    markedId = id;
+
+    $.ajax({
+
+        type: 'GET',
+
+        url: '/zonas/' + id,
+
+        success: function (response) {
+
+            showZona(response.data);
+
+            $('#config').modal('show');
+
+        },
+
+        error: function (response) {
+
+            Lobibox.notify('error', {
+                title: 'Error',
+                msg: response.responseJSON?.message ?? 'No fue posible consultar la información.',
+                showClass: 'fadeInDown',
+                hideClass: 'fadeUpDown',
+                delay: 15000,
+                sound: false,
+                icon: false,
+                width: 400
+            });
+
+        }
+
+    });
+
+}
+
+function showZona(zona) {
+
+    const form = document.getElementById('formGuardarZona');
 
     form.innerHTML = `
+
         <div class="col-12 col-md-12">
+
             <div class="row">
 
-                <div class="form-group col-md-8">
-                    <label class="obligatorio">Nombre</label>
+                <div class="form-group col-md-12">
+
+                    <label class="obligatorio">
+                        Nombre
+                    </label>
+
                     <input
                         type="text"
                         class="form-control text-center"
-                        id="tipoReservaNombre">
-                </div>
+                        id="tipoZona">
 
-                <div class="form-group col-md-4 text-center">
-                    <label class="obligatorio">Color</label>
-                    <input
-                        type="color"
-                        class="form-control"
-                        id="tipoReservaColor">
                 </div>
 
             </div>
+
         </div>
+
     `;
 
-    $('#tipoReservaNombre').val(tipo.nombre);
-    $('#tipoReservaColor').val(tipo.color);
+    $('#tipoZona').val(zona.nombre);
 
     $('#accionar').prop('disabled', false);
 
