@@ -7,6 +7,8 @@ use App\Http\Controllers\ZonasController;
 use App\Http\Controllers\EstadoEspaciosController;
 use App\Http\Controllers\TipoEspaciosController;
 use App\Http\Controllers\EspaciosController;
+use App\Http\Controllers\RsvAtributosController;
+use App\Http\Controllers\RsvAtributosEspaciosController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -63,3 +65,14 @@ Route::get('/espacios', function () {
 Route::get('/espacios/{id}', [EspaciosController::class, 'show']);
 
 Route::post('/espacios', [EspaciosController::class, 'store']);
+
+
+Route::get('/atributos', function () {
+    return view('atributos');
+});
+
+Route::get('/atributos/{id}', [RsvAtributosController::class, 'show']);
+
+Route::post('/atributos', [RsvAtributosController::class, 'store']);
+
+Route::post('/atributosEspacios', [RsvAtributosEspaciosController::class, 'store']);

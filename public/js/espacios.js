@@ -5,6 +5,11 @@ let zonas = [];
 let tiposEspacios = [];
 let estadosEspacios = [];
 
+let espacioSeleccionado = null;
+
+
+$('#guardarConfiguracion').on('click', guardarConfiguracion);
+
 $.ajaxSetup({
     headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -111,6 +116,21 @@ function cargarTabla() {
                     button += '</button>';
 
                     button += '</li>';
+
+
+
+                    button += '<li class="btn-info">';
+
+                    button += '<button class="btn btn-link" style="color:white;" onclick="configurarEspacio(' + row.id + ')">';
+
+                    button += '<i class="fa fa-cog" aria-hidden="true"></i> Configurar';
+
+                    button += '</button>';
+
+                    button += '</li>';
+
+
+
 
                     button += '</ul>';
 
@@ -508,5 +528,321 @@ function showEspacio(espacio) {
     $('#estadoEspacio').val(espacio.estado_espacio_id);
 
     $('#accionar').prop('disabled', false);
+
+}
+
+
+
+async function configurarEspacio(id) {
+
+    espacioSeleccionado = id;
+
+
+
+    const form = document.getElementById('formConfigurarAtributos');
+    form.innerHTML = `
+
+    <div class="row">
+
+        <div class="form-group col-md-12">
+
+            <label class="obligatorio">
+
+                Tipo de atributo
+
+            </label>
+
+            <select class="form-control" id="tipoAtributo">
+
+                <option value="">Seleccione...</option>
+
+                <option value="precio">Vr_Precio</option>
+
+                <option value="horario">Horarios</option>
+
+                <option value="otro">Otro</option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+    <div id="contenidoAtributo"></div>
+
+`;
+
+
+
+    $('#tipoAtributo').on('change', mostrarFormularioAtributo);
+
+    $('#configAtributos').modal('show');
+}
+
+function mostrarFormularioAtributo() {
+
+    let tipo = $('#tipoAtributo').val();
+
+    let html = '';
+
+    if (tipo == 'precio') {
+
+        html = `
+
+            <div class="form-group">
+
+                <label class="obligatorio">
+
+                    Valor
+
+                </label>
+
+                <input
+                    type="number"
+                    id="valorPrecio"
+                    class="form-control"
+                    placeholder="Ej: 5000">
+
+            </div>
+
+        `;
+
+    }
+
+    else if (tipo == 'horario') {
+
+        const dias = [
+            { key: 'monday', nombre: 'Lunes' },
+            { key: 'tuesday', nombre: 'Martes' },
+            { key: 'wednesday', nombre: 'Miércoles' },
+            { key: 'thursday', nombre: 'Jueves' },
+            { key: 'friday', nombre: 'Viernes' },
+            { key: 'saturday', nombre: 'Sábado' },
+            { key: 'sunday', nombre: 'Domingo' }
+        ];
+
+        html = '';
+
+        dias.forEach(function (dia) {
+
+            html += `
+
+            <div class="panel panel-default">
+
+                <div class="panel-heading">
+
+                    <label style="margin-bottom:0;">
+
+                        <input
+                            type="checkbox"
+                            class="diaHabilitado"
+                            data-day="${dia.key}">
+
+                        <strong>${dia.nombre}</strong>
+
+                    </label>
+
+                </div>
+
+                <div class="panel-body">
+
+                    <div
+                        id="horarios_${dia.key}"
+                        class="contenedorHorarios">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+        });
+
+    }
+
+    else if (tipo == 'otro') {
+
+        html = `
+
+            <div class="form-group">
+
+                <label class="obligatorio">
+
+                    Nombre
+
+                </label>
+
+                <input
+                    type="text"
+                    id="nombreOtro"
+                    class="form-control"
+                    placeholder="Ej: Video Beam">
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="obligatorio">
+
+                    Valor
+
+                </label>
+
+                <input
+                    type="text"
+                    id="valorOtro"
+                    class="form-control"
+                    placeholder="Ej: Sí">
+
+            </div>
+
+        `;
+
+    }
+
+    $('#contenidoAtributo').html(html);
+
+}
+
+
+
+
+function guardarConfiguracion() {
+    console.log("Hola boton")
+    if ($('#atributo').val() == '') {
+
+        Lobibox.notify('error', {
+            title: 'Debe seleccionar un atributo.',
+            showClass: 'fadeInDown',
+            hideClass: 'fadeUpDown',
+            delay: 5000,
+            sound: false,
+            icon: false,
+            width: 400
+        });
+
+        return;
+
+    }
+
+    $.ajax({
+
+        type: 'POST',
+
+        url: '/atributosEspacios',
+
+        data: {
+
+            espacio_id: espacioSeleccionado,
+
+            atributo_id: $('#atributo').val()
+
+        },
+
+        success: function (response) {
+
+            Lobibox.notify('success', {
+                title: response.message,
+                showClass: 'fadeInDown',
+                hideClass: 'fadeUpDown',
+                delay: 5000,
+                sound: false,
+                icon: false,
+                width: 400
+            });
+
+            $('#configAtributos').modal('hide');
+
+        },
+
+        error: function (response) {
+
+            Lobibox.notify('error', {
+                title: response.responseJSON.message,
+                showClass: 'fadeInDown',
+                hideClass: 'fadeUpDown',
+                delay: 5000,
+                sound: false,
+                icon: false,
+                width: 400
+            });
+
+        }
+
+    });
+
+}
+
+
+$(document).on('change', '.diaHabilitado', function () {
+
+    const dia = $(this).data('day');
+
+    if ($(this).is(':checked')) {
+
+        agregarBloqueHorario(dia);
+
+    } else {
+
+        $('#horarios_' + dia).empty();
+
+    }
+
+});
+
+function agregarBloqueHorario(dia) {
+
+    let html = `
+
+        <div class="row bloqueHorario" style="margin-bottom:10px;">
+
+            <div class="col-md-5">
+
+                <input
+                    type="time"
+                    class="form-control horaDesde">
+
+            </div>
+
+            <div class="col-md-5">
+
+                <input
+                    type="time"
+                    class="form-control horaHasta">
+
+            </div>
+
+            <div class="col-md-2">
+
+                <button
+                    type="button"
+                    class="btn btn-danger eliminarHorario">
+
+                    <i class="fa fa-trash"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="text-right">
+
+            <button
+                type="button"
+                class="btn btn-success btn-xs agregarHorario"
+                data-day="${dia}">
+
+                <i class="fa fa-plus"></i> Agregar horario
+
+            </button>
+
+        </div>
+
+    `;
+
+    $('#horarios_' + dia).html(html);
 
 }
