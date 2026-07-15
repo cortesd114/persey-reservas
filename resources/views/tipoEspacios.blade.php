@@ -3,10 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Tipo de Espacios</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap5-compat.css') }}?v=5">
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -201,19 +203,15 @@
                                 <b>Crear y modificar los tipos de espacios.</b>
                             </p>
 
-                            <div class="col-md-4 col-md-offset-7"></div>
+                            <div class="text-end">
+                                <button
+                                    type="button"
+                                    id="nuevoRegistro"
+                                    class="btn btn-success"
+                                    style="padding:9px;">Nuevo
 
-                            <button
-                                type="button"
-                                id="nuevoRegistro"
-                                class="btn btn-success"
-                                style="padding:9px;">
-
-                                <i class="fa fa-file-o" aria-hidden="true"></i>
-
-                                Nuevo
-
-                            </button>
+                                </button>
+                            </div>
 
                         </div>
 
@@ -263,7 +261,7 @@
 
     <div class="modal-dialog modal-lg">
 
-        <section id="form">
+        <section id="form" class="modal-content">
 
             <div class="container" style="width:99%;">
 
@@ -281,8 +279,8 @@
 
                                         <button
                                             type="button"
-                                            class="close"
-                                            data-dismiss="modal">
+                                            class="btn-close float-end"
+                                            data-bs-dismiss="modal">
 
                                             <span>&times;</span>
 
@@ -329,8 +327,8 @@
 
                                             <button
                                                 type="button"
-                                                class="btn btn-default"
-                                                data-dismiss="modal">
+                                                class="btn btn-outline-secondary"
+                                                data-bs-dismiss="modal">
 
                                                 Cerrar
 
@@ -362,7 +360,8 @@
 
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/bootstrap5-modal.js') }}"></script>
 
 <script src="{{ asset('js/tipoEspacios.js') }}"></script>
 

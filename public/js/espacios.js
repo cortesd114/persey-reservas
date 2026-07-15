@@ -94,58 +94,30 @@ function cargarTabla() {
                 render: function (_, _, row) {
 
                     let button = '<center>';
-
                     button += '<div class="btn-group btn-group-default">';
-
-                    button += '<button class="btn btn-default" type="button">';
+                    button += '<button class="btn btn-outline-secondary" type="button">';
                     button += '<i class="fa fa-bars"></i>';
                     button += '</button>';
-
-                    button += '<button class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button">';
+                    button += '<button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" type="button">';
                     button += '<span class="caret"></span>';
                     button += '</button>';
-
                     button += '<ul class="dropdown-menu" style="margin-left:-70px;">';
-
-                    button += '<li class="btn-warning">';
-
-                    button += '<button class="btn btn-link" style="color:white;" onclick="editItem(' + row.id + ')">';
-
+                    button += '<li><button class="dropdown-item text-dark bg-warning" onclick="editItem(' + row.id + ')">';
                     button += '<i class="fa fa-pencil-square-o"></i> Editar';
-
                     button += '</button>';
-
                     button += '</li>';
-
-
-
-                    button += '<li class="btn-info">';
-
-                    button += '<button class="btn btn-link" style="color:white;" onclick="configurarEspacio(' + row.id + ')">';
-
+                    button += '<li><button class="dropdown-item text-white bg-info" onclick="configurarEspacio(' + row.id + ')">';
                     button += '<i class="fa fa-cog" aria-hidden="true"></i> Configurar';
-
                     button += '</button>';
-
                     button += '</li>';
-
-
-
-
                     button += '</ul>';
-
                     button += '</div>';
-
                     button += '</center>';
-
                     return button;
 
                 }
-
             }
-
         ]
-
     });
 
 }
@@ -272,7 +244,7 @@ async function createItem() {
 
     $('#accionar').prop('disabled', false);
 
-    $('#config').modal('show');
+    showModal('config');
 
 }
 
@@ -362,7 +334,7 @@ function save() {
 
         success: function (response) {
 
-            $('#config').modal('hide');
+            hideModal('config');
 
             tablaEspacios.ajax.reload();
 
@@ -415,7 +387,7 @@ async function editItem(id) {
 
             showEspacio(response.data);
 
-            $('#config').modal('show');
+            showModal('config');
 
         },
 
@@ -576,7 +548,7 @@ async function configurarEspacio(id) {
 
     $('#tipoAtributo').on('change', mostrarFormularioAtributo);
 
-    $('#configAtributos').modal('show');
+    showModal('configAtributos');
 }
 
 function mostrarFormularioAtributo() {
@@ -611,54 +583,13 @@ function mostrarFormularioAtributo() {
 
     else if (tipo == 'horario') {
 
-        const dias = [
-            { key: 'monday', nombre: 'Lunes' },
-            { key: 'tuesday', nombre: 'Martes' },
-            { key: 'wednesday', nombre: 'Miércoles' },
-            { key: 'thursday', nombre: 'Jueves' },
-            { key: 'friday', nombre: 'Viernes' },
-            { key: 'saturday', nombre: 'Sábado' },
-            { key: 'sunday', nombre: 'Domingo' }
-        ];
+        html = `
 
-        html = '';
+        <div id="editorHorarios">
 
-        dias.forEach(function (dia) {
+        </div>
 
-            html += `
-
-            <div class="panel panel-default">
-
-                <div class="panel-heading">
-
-                    <label style="margin-bottom:0;">
-
-                        <input
-                            type="checkbox"
-                            class="diaHabilitado"
-                            data-day="${dia.key}">
-
-                        <strong>${dia.nombre}</strong>
-
-                    </label>
-
-                </div>
-
-                <div class="panel-body">
-
-                    <div
-                        id="horarios_${dia.key}"
-                        class="contenedorHorarios">
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        `;
-
-        });
+    `;
 
     }
 
@@ -703,15 +634,81 @@ function mostrarFormularioAtributo() {
     }
 
     $('#contenidoAtributo').html(html);
+    if (tipo == 'horario') {
+
+        construirEditorHorarios();
+
+    }
+
+}
+
+
+function construirEditorHorarios() {
+
+    const dias = [
+
+        { key: 'monday', nombre: 'Lunes' },
+
+        { key: 'tuesday', nombre: 'Martes' },
+
+        { key: 'wednesday', nombre: 'Miércoles' },
+
+        { key: 'thursday', nombre: 'Jueves' },
+
+        { key: 'friday', nombre: 'Viernes' },
+
+        { key: 'saturday', nombre: 'Sábado' },
+
+        { key: 'sunday', nombre: 'Domingo' }
+
+    ];
+
+    let html = '';
+
+    dias.forEach(function (dia) {
+
+        html += `
+
+            <div class="panel panel-default">
+
+                <div class="panel-heading">
+
+                    <label style="margin-bottom:0">
+
+                        <input
+                            type="checkbox"
+                            class="habilitarDia"
+                            data-dia="${dia.key}">
+
+                        <strong>${dia.nombre}</strong>
+
+                    </label>
+
+                </div>
+
+                <div class="panel-body">
+
+                    <div
+                        id="contenedor_${dia.key}">
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+    $('#editorHorarios').html(html);
 
 }
 
 
 
-
 function guardarConfiguracion() {
     console.log("Hola boton")
-    if ($('#atributo').val() == '') {
+    if ($('#tipoAtributo').val() == '') {
 
         Lobibox.notify('error', {
             title: 'Debe seleccionar un atributo.',
@@ -737,7 +734,7 @@ function guardarConfiguracion() {
 
             espacio_id: espacioSeleccionado,
 
-            atributo_id: $('#atributo').val()
+
 
         },
 
@@ -753,7 +750,7 @@ function guardarConfiguracion() {
                 width: 400
             });
 
-            $('#configAtributos').modal('hide');
+            hideModal('configAtributos');
 
         },
 
@@ -776,45 +773,155 @@ function guardarConfiguracion() {
 }
 
 
-$(document).on('change', '.diaHabilitado', function () {
+$(document).on('change', '.habilitarDia', function () {
 
-    const dia = $(this).data('day');
+    const dia = $(this).data('dia');
+
 
     if ($(this).is(':checked')) {
 
-        agregarBloqueHorario(dia);
+        agregarPrimerHorario(dia);
 
-    } else {
 
-        $('#horarios_' + dia).empty();
+    }
+
+    else {
+
+        $('#contenedor_' + dia).empty();
 
     }
 
 });
 
-function agregarBloqueHorario(dia) {
 
-    let html = `
+function agregarPrimerHorario(dia) {
 
-        <div class="row bloqueHorario" style="margin-bottom:10px;">
+    let html = construirHorario();
+
+    $('#contenedor_' + dia).html(`
+
+        <div id="horarios_${dia}">
+
+            ${html}
+
+        </div>
+
+        <div class="text-center" style="margin-top:15px;">
+
+            <button
+                type="button"
+                class="btn btn-success agregarHorario"
+                data-dia="${dia}">
+
+                <i class="fa fa-plus"></i>
+
+                Agregar horario
+
+            </button>
+
+        </div>
+
+    `);
+
+    iniciarDatePicker();
+
+}
+
+$(document).on('click', '.agregarHorario', function () {
+
+    const dia = $(this).data('dia');
+
+    agregarHorario(dia);
+
+});
+
+function agregarHorario(dia) {
+
+    $('#horarios_' + dia).append(
+
+        construirHorario()
+
+    );
+    iniciarDatePicker();
+
+}
+
+let contadorHorarios = 0;
+
+
+function construirHorario() {
+
+    contadorHorarios++;
+
+    return `
+
+        <div class="row horarioItem" style="margin-bottom:20px;">
 
             <div class="col-md-5">
 
-                <input
-                    type="time"
-                    class="form-control horaDesde">
+                <label>
+
+                    Desde
+
+                </label>
+
+                <div
+                    class="input-group date horaPickerDesde"
+                    id="desde_${contadorHorarios}">
+
+                    <input
+                        type="text"
+                        readonly
+                        class="form-control horaDesde"/>
+
+                    <span class="input-group-addon">
+
+                        <i class="fa fa-clock-o"></i>
+
+                    </span>
+
+                </div>
 
             </div>
+
 
             <div class="col-md-5">
 
-                <input
-                    type="time"
-                    class="form-control horaHasta">
+                <label>
+
+                    Hasta
+
+                </label>
+
+                <div
+                    class="input-group date horaPickerHasta"
+                    id="hasta_${contadorHorarios}">
+
+                    <input
+                        type="text"
+                        readonly
+                        class="form-control horaHasta"/>
+
+                    <span class="input-group-addon">
+
+                        <i class="fa fa-clock-o"></i>
+
+                    </span>
+
+                </div>
 
             </div>
 
-            <div class="col-md-2">
+
+            <div class="col-md-2 text-center">
+
+                <label>
+
+                    &nbsp;
+
+                </label>
+
+                <br>
 
                 <button
                     type="button"
@@ -828,21 +935,45 @@ function agregarBloqueHorario(dia) {
 
         </div>
 
-        <div class="text-right">
-
-            <button
-                type="button"
-                class="btn btn-success btn-xs agregarHorario"
-                data-day="${dia}">
-
-                <i class="fa fa-plus"></i> Agregar horario
-
-            </button>
-
-        </div>
-
     `;
 
-    $('#horarios_' + dia).html(html);
+}
+$(document).on('click', '.eliminarHorario', function () {
+
+    $(this)
+        .closest('.horarioItem')
+        .remove();
+
+});
+
+function iniciarDatePicker() {
+    $('.horaPickerDesde').datetimepicker({
+
+        format: 'hh:ii',
+        autoclose: true,
+        minuteStep: 30,
+        showMeridian: false,
+        startView: 1,
+        minView: 0,
+        maxView: 1,
+        container: '.modal-body'
+
+    });
+
+
+
+    $('.horaPickerHasta').datetimepicker({
+
+        format: 'hh:ii',
+        autoclose: true,
+        minuteStep: 30,
+        showMeridian: false,
+        startView: 1,
+        minView: 0,
+        maxView: 1,
+        container: '.modal-body'
+
+    });
+
 
 }

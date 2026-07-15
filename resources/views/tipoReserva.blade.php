@@ -3,10 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Tipos de Reserva</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap5-compat.css') }}?v=5">
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -195,8 +197,9 @@
                                 <p>
                                     <b>Crear y modificar los tipos de reserva.</b>
                                 </p>
-                                <div class="col-md-4 col-md-offset-7"></div>
-                                <button type="button" id="nuevoRegistro" class="btn btn-success float-right" style="padding: 9px;"><i class="fa fa-file-o" aria-hidden="true"> Nuevo</i></button>
+                                <div class="text-end">
+                                    <button type="button" id="nuevoRegistro" class="btn btn-success" style="padding: 9px;">Nuevo</button>
+                                </div>
                             </div>
 
                             <div class="panel-body panel-block">
@@ -240,7 +243,7 @@
     <div class="modal fade bd-example-modal-lg" id="config" role="dialog">
         <div class="modal-dialog modal-lg">
             <!-- Modal content-->
-            <section id="form">
+            <section id="form" class="modal-content">
                 <div class="container" style="width: 99%;">
 
                     <div class="row">
@@ -249,7 +252,7 @@
                                 <div class="col-md-12">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
-                                            <button type="button" id="Cerrar" class="close" data-dismiss="modal"
+                                            <button type="button" id="Cerrar" class="btn-close float-end" data-bs-dismiss="modal"
                                                 aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                             <input type="hidden" id="idTipoReserva">
                                             <h3 class="text-uppercase">Guardar Tipo de Reserva</h3>
@@ -267,7 +270,7 @@
                                                 <button type="button" class="btn btn-success"
                                                     id="accionar">Guardar</button>
                                                 <button type="button" class="btn btn-secondary"
-                                                    data-dismiss="modal">Cerrar</button>
+                                                    data-bs-dismiss="modal">Cerrar</button>
                                             </div>
                                         </div>
                                     </div>
@@ -284,7 +287,8 @@
 
     <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/bootstrap5-modal.js') }}"></script>
 
     <script src="{{ asset('js/tipoReserva.js') }}"></script>
 

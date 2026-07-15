@@ -73,18 +73,17 @@ function cargarTabla() {
 
                     button += '<div class="btn-group btn-group-default">';
 
-                    button += '<button class="btn btn-default" type="button">';
+                    button += '<button class="btn btn-outline-secondary" type="button">';
                     button += '<i class="fa fa-bars" aria-hidden="true"></i>';
                     button += '</button>';
 
-                    button += '<button class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button">';
+                    button += '<button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" type="button">';
                     button += '<span class="caret"></span>';
                     button += '</button>';
 
                     button += '<ul class="dropdown-menu" style="margin-left:-70px;">';
 
-                    button += '<li class="btn-warning">';
-                    button += '<button class="btn btn-link" style="color:white;" onclick="editItem(' + row.id + ')">';
+                    button += '<li><button class="dropdown-item text-dark bg-warning" onclick="editItem(' + row.id + ')">';
                     button += '<i class="fa fa-pencil-square-o" aria-hidden="true"></i> Editar';
                     button += '</button>';
                     button += '</li>';
@@ -142,7 +141,7 @@ function createItem() {
 
     $('#accionar').prop('disabled', false);
 
-    $('#config').modal('show');
+    showModal('config');
 
 }
 
@@ -211,7 +210,7 @@ function save() {
 
         success: function (response) {
 
-            $('#config').modal('hide');
+            hideModal('config');
 
             tablaTipoEspacios.ajax.reload();
 
@@ -262,7 +261,7 @@ function editItem(id) {
 
             showTipoEspacios(response.data);
 
-            $('#config').modal('show');
+            showModal('config');
 
         },
 

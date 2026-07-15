@@ -3,13 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Espacios</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap5-compat.css') }}?v=5">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{asset('css/bootstrap-datetimepicker.css')}}">
 
     <style>
         .content-input input,
@@ -174,6 +177,21 @@
         .slider.round:before {
             border-radius: 50%;
         }
+
+        #config.modal.show .modal-dialog,
+        #configAtributos.modal.show .modal-dialog {
+            animation: entrada-modal-espacios .3s ease-out;
+        }
+
+        @keyframes entrada-modal-espacios {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 
@@ -202,17 +220,18 @@
                                             <b>Crear y modificar los espacios.</b>
                                         </p>
 
-                                        <div class="col-md-4 col-md-offset-7"></div>
+                                        <div class="text-end">
 
-                                        <button type="button" id="nuevoRegistro" class="btn btn-success"
-                                            style="padding:9px;">
 
-                                            <i class="fa fa-file-o" aria-hidden="true"></i>
 
-                                            Nuevo
 
-                                        </button>
+                                            <button type="button" id="nuevoRegistro" class="btn btn-success"
+                                                style="padding:9px;">
 
+                                                Nuevo
+
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <div class="panel-body panel-block">
@@ -225,7 +244,7 @@
                                                 <tr>
 
                                                     <th style="width:5%;">
-                                                        It
+                                                        ID
                                                     </th>
 
                                                     <th style="width:20%; text-align:left;">
@@ -273,11 +292,11 @@
         </div>
     </div>
 
-    <div class="modal fade bd-example-modal-lg" id="config" role="dialog">
+    <div class="modal fade bd-example-modal-lg" id="config" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog">
 
         <div class="modal-dialog modal-lg">
 
-            <section id="form">
+            <section id="form" class="modal-content">
 
                 <div class="container" style="width:99%;">
 
@@ -293,7 +312,7 @@
 
                                         <div class="panel-heading">
 
-                                            <button type="button" class="close" data-dismiss="modal">
+                                            <button type="button" class="btn-close float-end" data-bs-dismiss="modal">
 
                                                 <span>&times;</span>
 
@@ -332,7 +351,8 @@
 
                                                 </button>
 
-                                                <button type="button" class="btn btn-default" data-dismiss="modal">
+                                                <button type="button" class="btn btn-outline-secondary"
+                                                    data-bs-dismiss="modal">
 
                                                     Cerrar
 
@@ -345,15 +365,10 @@
                                     </div>
 
                                 </div>
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </section>
 
         </div>
@@ -366,20 +381,15 @@
 
             <div class="modal-content">
 
-                <div class="modal-header">
-
-                    <button type="button" class="close" data-dismiss="modal">
-
-                        &times;
-
-                    </button>
-
+                <div class="panel-heading">
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     <h4>
 
                         Configurar atributos
 
                     </h4>
 
+                    
                 </div>
 
                 <div class="modal-body">
@@ -399,7 +409,7 @@
 
                     </button>
 
-                    <button class="btn btn-default" data-dismiss="modal">
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal">
 
                         Cerrar
 
@@ -416,11 +426,13 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/bootstrap5-modal.js') }}"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+    <script src="{{asset('js/bootstrap-datetimepicker.min.js')}}"></script>
 
-    <script src="{{ asset('js/espacios.js') }}"></script>
-</body>
+    <script src="{{asset('js/bootstrap-datetimepicker.es.js')}}"></script>
+
+    <script src="{{asset('js/espacios.js')}}"></script> 
 
 </html>
