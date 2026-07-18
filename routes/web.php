@@ -20,7 +20,7 @@ Route::get('/tipoReserva', function () {
 
 Route::get('/tipoReserva/{id}', [TipoReservaController::class, 'show']);
 
-Route::post('/tipoReserva', [EstadoReservaController::class, 'store']);
+Route::post('/tipoReserva', [TipoReservaController::class, 'store']);
 
 
 Route::get('/zonas', function () {

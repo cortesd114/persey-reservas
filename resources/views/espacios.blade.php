@@ -196,100 +196,83 @@
 </head>
 
 <body>
-    <div class="row">
-        <div class="col-md-12 text-center" style="margin-top:2%;">
-            <div class="container" style="width: 99%;">
+    <div class="container" style="width: 99%;">
 
+        <div class="row">
+            <div class="col-md-12 text-center" style="margin-top:2%;">
                 <div class="row">
+                    <div class="col-md-12">
 
-                    <div class="col-md-12 text-center" style="margin-top:2%;">
+                        <div class="panel panel-default">
 
-                        <div class="row">
+                            <div class="panel-heading">
 
-                            <div class="col-md-12">
+                                <h3 class="text-uppercase">
+                                    Espacios
+                                </h3>
 
-                                <div class="panel panel-default">
+                                <p>
+                                    <b>Crear y modificar los espacios.</b>
+                                </p>
 
-                                    <div class="panel-heading">
+                                <div class="text-end">
+                                    <button type="button" id="nuevoRegistro" class="btn btn-success"
+                                        style="padding:9px;">
 
-                                        <h3 class="text-uppercase">
-                                            Espacios
-                                        </h3>
+                                        Nuevo
 
-                                        <p>
-                                            <b>Crear y modificar los espacios.</b>
-                                        </p>
-
-                                        <div class="text-end">
-
-
-
-
-                                            <button type="button" id="nuevoRegistro" class="btn btn-success"
-                                                style="padding:9px;">
-
-                                                Nuevo
-
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div class="panel-body panel-block">
-
-                                        <table id="tabla"
-                                            class="table table-striped table-bordered dt-responsive text-center">
-
-                                            <thead>
-
-                                                <tr>
-
-                                                    <th style="width:5%;">
-                                                        ID
-                                                    </th>
-
-                                                    <th style="width:20%; text-align:left;">
-                                                        Nombre
-                                                    </th>
-
-                                                    <th style="width:20%; text-align:left;">
-                                                        Zona
-                                                    </th>
-
-                                                    <th style="width:20%;">
-                                                        Tipo
-                                                    </th>
-
-                                                    <th style="width:20%;">
-                                                        Estado
-                                                    </th>
-
-                                                    <th style="width:10%;">
-                                                        Acciones
-                                                    </th>
-
-                                                </tr>
-
-                                            </thead>
-
-                                        </table>
-
-                                    </div>
-
+                                    </button>
                                 </div>
+                            </div>
+
+                            <div class="panel-body panel-block">
+
+                                <table id="tabla"
+                                    class="table table-striped table-bordered dt-responsive text-center">
+
+                                    <thead>
+
+                                        <tr>
+
+                                            <th style="width:5%;">
+                                                ID
+                                            </th>
+
+                                            <th style="width:20%; text-align:left;">
+                                                Nombre
+                                            </th>
+
+                                            <th style="width:20%; text-align:left;">
+                                                Zona
+                                            </th>
+
+                                            <th style="width:20%;">
+                                                Tipo
+                                            </th>
+
+                                            <th style="width:20%;">
+                                                Estado
+                                            </th>
+
+                                            <th style="width:10%;">
+                                                Acciones
+                                            </th>
+
+                                        </tr>
+
+                                    </thead>
+
+                                </table>
 
                             </div>
 
                         </div>
 
                     </div>
-
                 </div>
-
-            </div>
-            <div class="row">
-
             </div>
         </div>
+
     </div>
 
     <div class="modal fade bd-example-modal-lg" id="config" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog">
