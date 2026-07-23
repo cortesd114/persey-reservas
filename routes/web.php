@@ -76,3 +76,8 @@ Route::get('/atributos/{id}', [RsvAtributosController::class, 'show']);
 Route::post('/atributos', [RsvAtributosController::class, 'store']);
 
 Route::post('/atributosEspacios', [RsvAtributosEspaciosController::class, 'store']);
+
+Route::get(
+    '/atributosEspacios/{id}',
+    [RsvAtributosEspaciosController::class, 'show']
+);

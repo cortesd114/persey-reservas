@@ -4,6 +4,8 @@ let tablaEspacios = null;
 let zonas = [];
 let tiposEspacios = [];
 let estadosEspacios = [];
+let atributosConfigurados = [];
+let horariosConfigurados = null;
 
 let espacioSeleccionado = null;
 
@@ -509,55 +511,87 @@ async function configurarEspacio(id) {
 
     espacioSeleccionado = id;
 
+    contadorHorarios = 0;
+
+    await consultarAtributos();
+
+    const form = document.getElementById(
+        'formConfigurarAtributos'
+    );
 
 
-    const form = document.getElementById('formConfigurarAtributos');
     form.innerHTML = `
 
-    <div class="row">
+        <div class="row">
 
-        <div class="form-group col-md-12">
+            <div class="form-group col-md-12">
 
-            <label class="obligatorio">
+                <label class="obligatorio">
 
-                Tipo de atributo
+                    Tipo de atributo
 
-            </label>
+                </label>
 
-            <select class="form-control" id="tipoAtributo">
+                <select
+                    class="form-control"
+                    id="tipoAtributo">
 
-                <option value="">Seleccione...</option>
+                    <option value="">
+                        Seleccione...
+                    </option>
 
-                <option value="precio">Vr_Precio</option>
+                    <option value="precio">
+                        Vr_Precio
+                    </option>
 
-                <option value="horario">Horarios</option>
+                    <option value="horario">
+                        Horarios
+                    </option>
 
-                <option value="otro">Otro</option>
+                    <option value="otro">
+                        Otro
+                    </option>
 
-            </select>
+                </select>
+
+            </div>
 
         </div>
 
-    </div>
+        <div id="contenidoAtributo"></div>
 
-    <div id="contenidoAtributo"></div>
-
-`;
+    `;
 
 
+    $('#tipoAtributo').on(
+        'change',
+        mostrarFormularioAtributo
+    );
 
-    $('#tipoAtributo').on('change', mostrarFormularioAtributo);
 
     showModal('configAtributos');
+
 }
 
 function mostrarFormularioAtributo() {
 
     let tipo = $('#tipoAtributo').val();
 
+
+
     let html = '';
 
+
     if (tipo == 'precio') {
+
+        let precio = obtenerAtributo('Vr_Precio');
+
+        let valorPrecio = '';
+        if (precio) {
+
+            valorPrecio = precio.valor;
+
+        }
 
         html = `
 
@@ -569,11 +603,12 @@ function mostrarFormularioAtributo() {
 
                 </label>
 
-                <input
-                    type="number"
-                    id="valorPrecio"
-                    class="form-control"
-                    placeholder="Ej: 5000">
+             <input
+                type="number"
+                id="valorPrecio"
+                class="form-control"
+                value="${valorPrecio}"
+                placeholder="Ej: 5000">
 
             </div>
 
@@ -582,6 +617,24 @@ function mostrarFormularioAtributo() {
     }
 
     else if (tipo == 'horario') {
+
+        let horarios = obtenerAtributo('Horarios');
+
+        let valorHorarios = null;
+        if (horarios) {
+
+            valorHorarios = JSON.parse(horarios.valor);
+
+            horariosConfigurados = valorHorarios;
+
+        }
+        else {
+
+            horariosConfigurados = null;
+
+        }
+
+
 
         html = `
 
@@ -592,7 +645,6 @@ function mostrarFormularioAtributo() {
     `;
 
     }
-
     else if (tipo == 'otro') {
 
         html = `
@@ -633,8 +685,12 @@ function mostrarFormularioAtributo() {
 
     }
 
+
     $('#contenidoAtributo').html(html);
+
     if (tipo == 'horario') {
+
+
 
         construirEditorHorarios();
 
@@ -642,8 +698,8 @@ function mostrarFormularioAtributo() {
 
 }
 
-
 function construirEditorHorarios() {
+    
 
     const dias = [
 
@@ -663,9 +719,19 @@ function construirEditorHorarios() {
 
     ];
 
+
     let html = '';
 
     dias.forEach(function (dia) {
+
+
+
+        if (horariosConfigurados?.[dia.key]) {
+
+
+
+        }
+
 
         html += `
 
@@ -701,14 +767,64 @@ function construirEditorHorarios() {
     });
 
     $('#editorHorarios').html(html);
+    dias.forEach(function (dia) {
+
+        if (!horariosConfigurados?.[dia.key]) {
+
+            return;
+
+        }
+
+        if (!horariosConfigurados[dia.key][0].enabled) {
+
+            return;
+
+        }
+
+        let horarios = horariosConfigurados[dia.key];
+        $('.habilitarDia[data-dia="' + dia.key + '"]')
+            .prop('checked', true);
+
+        agregarPrimerHorario(dia.key);
+
+        $('#horarios_' + dia.key + ' .horaDesde')
+            .first()
+            .val(horarios[0].from);
+
+        $('#horarios_' + dia.key + ' .horaHasta')
+            .first()
+            .val(horarios[0].to);
+
+        for (let i = 1; i < horarios.length; i++) {
+
+            agregarHorario(dia.key);
+
+            $('#horarios_' + dia.key + ' .horaDesde')
+                .last()
+                .val(horarios[i].from);
+
+            $('#horarios_' + dia.key + ' .horaHasta')
+                .last()
+                .val(horarios[i].to);
+
+        }
+    });
 
 }
 
 
 
 function guardarConfiguracion() {
-    console.log("Hola boton")
-    if ($('#tipoAtributo').val() == '') {
+
+    const tipo = $('#tipoAtributo').val();
+
+    let nombre = '';
+    let valor = '';
+    let required = 0;
+
+
+    //Debe seleccionar un tipo de atributo
+    if (tipo == '') {
 
         Lobibox.notify('error', {
             title: 'Debe seleccionar un atributo.',
@@ -724,6 +840,99 @@ function guardarConfiguracion() {
 
     }
 
+
+    //HORARIOS
+    if (tipo == 'horario') {
+
+        const horarios = construirJSONHorarios();
+        console.log(
+
+            $('.habilitarDia[data-dia="friday"]')
+                .is(':checked')
+
+        );
+
+        if (!validarHorarios(horarios)) {
+
+            return;
+
+        }
+
+        if (!validarCruceHorarios(horarios)) {
+
+            return;
+
+        }
+
+
+        nombre = 'Horarios';
+
+        valor = JSON.stringify(horarios);
+
+        required = 1;
+
+    }
+
+
+    //PRECIO
+    else if (tipo == 'precio') {
+
+        if ($('#valorPrecio').val() == '') {
+
+            Lobibox.notify('error', {
+                title: 'Debe ingresar el valor del precio.',
+                showClass: 'fadeInDown',
+                hideClass: 'fadeUpDown',
+                delay: 5000,
+                sound: false,
+                icon: false,
+                width: 400
+            });
+
+            return;
+
+        }
+
+
+        nombre = 'Vr_Precio';
+
+        valor = $('#valorPrecio').val();
+
+        required = 1;
+
+    }
+
+
+    //OTROS
+    else if (tipo == 'otro') {
+
+        if ($('#nombreOtro').val() == '' ||
+            $('#valorOtro').val() == '') {
+
+            Lobibox.notify('error', {
+                title: 'Debe completar todos los campos.',
+                showClass: 'fadeInDown',
+                hideClass: 'fadeUpDown',
+                delay: 5000,
+                sound: false,
+                icon: false,
+                width: 400
+            });
+
+            return;
+
+        }
+
+
+        nombre = $('#nombreOtro').val();
+
+        valor = $('#valorOtro').val();
+
+        required = 0;
+
+    }
+
+
     $.ajax({
 
         type: 'POST',
@@ -733,14 +942,16 @@ function guardarConfiguracion() {
         data: {
 
             espacio_id: espacioSeleccionado,
-
-
+            nombre: nombre,
+            valor: valor,
+            required: required
 
         },
 
         success: function (response) {
 
             Lobibox.notify('success', {
+
                 title: response.message,
                 showClass: 'fadeInDown',
                 hideClass: 'fadeUpDown',
@@ -748,7 +959,9 @@ function guardarConfiguracion() {
                 sound: false,
                 icon: false,
                 width: 400
+
             });
+
 
             hideModal('configAtributos');
 
@@ -757,6 +970,7 @@ function guardarConfiguracion() {
         error: function (response) {
 
             Lobibox.notify('error', {
+
                 title: response.responseJSON.message,
                 showClass: 'fadeInDown',
                 hideClass: 'fadeUpDown',
@@ -764,14 +978,15 @@ function guardarConfiguracion() {
                 sound: false,
                 icon: false,
                 width: 400
+
             });
 
         }
 
     });
 
-}
 
+}
 
 $(document).on('change', '.habilitarDia', function () {
 
@@ -849,7 +1064,7 @@ function agregarHorario(dia) {
 let contadorHorarios = 0;
 
 
-function construirHorario() {
+function construirHorario(desde = '', hasta = '') {
 
     contadorHorarios++;
 
@@ -869,10 +1084,11 @@ function construirHorario() {
                     class="input-group date horaPickerDesde"
                     id="desde_${contadorHorarios}">
 
-                    <input
-                        type="text"
-                        readonly
-                        class="form-control horaDesde"/>
+                <input
+                    type="text"
+                    readonly
+                    value="${desde}"
+                    class="form-control horaDesde"/>
 
                     <span class="input-group-addon">
 
@@ -897,9 +1113,10 @@ function construirHorario() {
                     class="input-group date horaPickerHasta"
                     id="hasta_${contadorHorarios}">
 
-                    <input
+                   <input
                         type="text"
                         readonly
+                        value="${hasta}"
                         class="form-control horaHasta"/>
 
                     <span class="input-group-addon">
@@ -975,5 +1192,236 @@ function iniciarDatePicker() {
 
     });
 
+
+}
+/* _____________________Logica Horarios__________ */
+
+function validarHorarios(horarios) {
+
+    for (let dia in horarios) {
+
+        let horariosDia = horarios[dia];
+
+        for (let i = 0; i < horariosDia.length; i++) {
+
+            let horario = horariosDia[i];
+
+            //No validar los días deshabilitados
+            if (!horario.enabled) {
+
+                continue;
+
+            }
+
+            //La hora inicial debe ser menor que la final
+            if (horario.from >= horario.to) {
+
+                Lobibox.notify('error', {
+                    title: 'La hora inicial debe ser menor que la hora final.',
+                    showClass: 'fadeInDown',
+                    hideClass: 'fadeUpDown',
+                    delay: 5000,
+                    sound: false,
+                    icon: false,
+                    width: 400
+                });
+
+                return false;
+
+            }
+
+            //No permitir horarios vacíos
+            if (!horario.from || !horario.to) {
+
+                Lobibox.notify('error', {
+                    title: 'Todos los horarios habilitados deben estar completos.',
+                    showClass: 'fadeInDown',
+                    hideClass: 'fadeUpDown',
+                    delay: 5000,
+                    sound: false,
+                    icon: false,
+                    width: 400
+                });
+
+                return false;
+
+            }
+
+        }
+
+    }
+
+    return true;
+
+}
+
+const nombresDias = {
+
+    monday: 'Lunes',
+    tuesday: 'Martes',
+    wednesday: 'Miércoles',
+    thursday: 'Jueves',
+    friday: 'Viernes',
+    saturday: 'Sábado',
+    sunday: 'Domingo'
+
+};
+
+function validarCruceHorarios(horarios) {
+
+    for (let dia in horarios) {
+
+        //Ignoramos los días deshabilitados
+        if (!horarios[dia][0].enabled) {
+
+            continue;
+
+        }
+
+        //Ordenamos los horarios por la hora inicial
+        horarios[dia].sort(function (a, b) {
+
+            return a.from.localeCompare(b.from);
+
+        });
+
+
+        for (let i = 0; i < horarios[dia].length - 1; i++) {
+
+            let horarioActual = horarios[dia][i];
+
+            let siguienteHorario = horarios[dia][i + 1];
+
+
+            //Existe un cruce de horarios
+            if (horarioActual.to > siguienteHorario.from) {
+
+                Lobibox.notify('error', {
+
+                    title: 'Existen horarios cruzados para el día ' + nombresDias[dia] + '.',
+                    showClass: 'fadeInDown',
+                    hideClass: 'fadeUpDown',
+                    delay: 5000,
+                    sound: false,
+                    icon: false,
+                    width: 400
+
+                });
+
+                return false;
+
+            }
+
+        }
+
+    }
+
+    return true;
+
+}
+
+function construirJSONHorarios() {
+
+    let horarios = {
+
+        monday: [],
+        tuesday: [],
+        wednesday: [],
+        thursday: [],
+        friday: [],
+        saturday: [],
+        sunday: []
+
+    };
+
+    const dias = [
+
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday',
+        'sunday'
+
+    ];
+
+    dias.forEach(function (dia) {
+
+        const habilitado = $(
+            '.habilitarDia[data-dia="' + dia + '"]'
+        ).is(':checked');
+
+        if (!habilitado) {
+
+            horarios[dia].push({
+
+                enabled: false,
+                from: null,
+                to: null
+
+            });
+
+        }
+
+
+        else {
+
+            $('#horarios_' + dia + ' .horarioItem').each(function () {
+
+                const desde = $(this).find('.horaDesde').val();
+
+                const hasta = $(this).find('.horaHasta').val();
+
+
+                horarios[dia].push({
+
+                    enabled: true,
+                    from: desde,
+                    to: hasta
+
+                });
+
+            });
+
+        }
+
+    });
+
+    return horarios;
+
+}
+
+async function consultarAtributos() {
+
+    return $.ajax({
+
+        type: 'GET',
+
+        url: '/atributosEspacios/' + espacioSeleccionado,
+
+        success: function (response) {
+
+            atributosConfigurados = response.data;
+
+        },
+
+        error: function (response) {
+
+            console.log(response);
+
+        }
+
+    });
+
+}
+
+function obtenerAtributo(nombre) {
+
+    return atributosConfigurados.find(function (atributo) {
+
+        return atributo.nombre == nombre;
+
+    });
 
 }

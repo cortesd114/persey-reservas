@@ -7,13 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class RsvAtributosEspacios extends Model
 {
-    use HasFactory;
+     use HasFactory;
 
     protected $table = 'rsv_atributos_espacios';
 
     protected $fillable = [
+
         'espacio_id',
         'atributo_id'
+
     ];
+    public $timestamps = false;
 }
 

@@ -14,4 +14,5 @@ class RsvAtributos extends Model
         'valor',
         'required'
     ];
+    public $timestamps = false; 
 }
