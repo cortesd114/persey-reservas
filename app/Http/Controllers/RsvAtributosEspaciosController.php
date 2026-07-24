@@ -142,5 +142,62 @@ class RsvAtributosEspaciosController extends Controller
 
 
     }
+    public function eliminarOtros($id)
+    {
+
+        try {
+
+            $atributosEspacios = RsvAtributosEspacios::where(
+                'espacio_id',
+                $id
+            )->get();
+
+
+            foreach ($atributosEspacios as $item) {
+
+                $atributo = RsvAtributos::find(
+                    $item->atributo_id
+                );
+
+                if (!$atributo) {
+
+                    continue;
+
+                }
+
+                if (
+                    $atributo->nombre != 'Vr_Precio' &&
+                    $atributo->nombre != 'Horarios' &&  $atributo->nombre != 'Direccion'
+                ) {
+
+                    $item->delete();
+
+                    $atributo->delete();
+
+                }
+
+            }
+
+
+            return response()->json([
+
+                'success' => true
+
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+
+                'success' => false,
+                'error' => $e->getMessage()
+
+            ], 500);
+
+        }
+
+    }
+
+
 }
 

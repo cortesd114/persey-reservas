@@ -6,7 +6,7 @@ let tiposEspacios = [];
 let estadosEspacios = [];
 let atributosConfigurados = [];
 let horariosConfigurados = null;
-
+let otrosConfigurados = [];
 let espacioSeleccionado = null;
 
 
@@ -548,9 +548,13 @@ async function configurarEspacio(id) {
                         Horarios
                     </option>
 
+                    <option value="direccion">
+                        Direccion
+                    </option>
+<!--
                     <option value="otro">
                         Otro
-                    </option>
+                    </option> -->
 
                 </select>
 
@@ -615,6 +619,34 @@ function mostrarFormularioAtributo() {
         `;
 
     }
+    else if (tipo == 'direccion') {
+        let direccion = obtenerAtributo('Direccion');
+        let valorDireccion = '';
+
+        if (direccion) {
+            valorDireccion = direccion.valor;
+        }
+        html = `
+
+            <div class="form-group">
+
+                <label class="obligatorio">
+
+                    Valor
+
+                </label>
+
+             <input
+                type="text"
+                id="valorDireccion"
+                class="form-control"
+                value="${valorDireccion}"
+                placeholder="Ej: lote 4 ">
+
+            </div>
+
+        `;
+    }
 
     else if (tipo == 'horario') {
 
@@ -647,9 +679,31 @@ function mostrarFormularioAtributo() {
     }
     else if (tipo == 'otro') {
 
+        otrosConfigurados = [];
+
+        atributosConfigurados.forEach(function (atributo) {
+
+            if (
+                atributo.nombre != 'Vr_Precio' &&
+                atributo.nombre != 'Horarios'
+            ) {
+
+                otrosConfigurados.push({
+
+                    nombre: atributo.nombre,
+                    valor: atributo.valor
+
+                });
+
+            }
+
+        });
+
         html = `
 
-            <div class="form-group">
+        <div class="row">
+
+            <div class="col-md-5">
 
                 <label class="obligatorio">
 
@@ -665,7 +719,7 @@ function mostrarFormularioAtributo() {
 
             </div>
 
-            <div class="form-group">
+            <div class="col-md-5">
 
                 <label class="obligatorio">
 
@@ -681,25 +735,54 @@ function mostrarFormularioAtributo() {
 
             </div>
 
-        `;
+            <div class="col-md-2">
+
+                <label>
+
+                    &nbsp;
+
+                </label>
+
+                <button
+                    type="button"
+                    class="btn btn-success"
+                    id="agregarOtro">
+
+                    +
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <br>
+
+        <div id="listaOtros">
+
+        </div>
+
+    `;
 
     }
-
 
     $('#contenidoAtributo').html(html);
 
     if (tipo == 'horario') {
 
-
-
         construirEditorHorarios();
 
     }
 
+    if (tipo == 'otro') {
+
+        pintarOtros();
+
+    }
 }
 
 function construirEditorHorarios() {
-    
+
 
     const dias = [
 
@@ -823,7 +906,6 @@ function guardarConfiguracion() {
     let required = 0;
 
 
-    //Debe seleccionar un tipo de atributo
     if (tipo == '') {
 
         Lobibox.notify('error', {
@@ -835,13 +917,9 @@ function guardarConfiguracion() {
             icon: false,
             width: 400
         });
-
         return;
-
     }
 
-
-    //HORARIOS
     if (tipo == 'horario') {
 
         const horarios = construirJSONHorarios();
@@ -901,16 +979,13 @@ function guardarConfiguracion() {
         required = 1;
 
     }
+    //direccion
+     else if (tipo == 'Direccion') {
 
-
-    //OTROS
-    else if (tipo == 'otro') {
-
-        if ($('#nombreOtro').val() == '' ||
-            $('#valorOtro').val() == '') {
+        if ($('#valorDireccion').val() == '') {
 
             Lobibox.notify('error', {
-                title: 'Debe completar todos los campos.',
+                title: 'Debe ingresar una direccion.',
                 showClass: 'fadeInDown',
                 hideClass: 'fadeUpDown',
                 delay: 5000,
@@ -924,15 +999,90 @@ function guardarConfiguracion() {
         }
 
 
-        nombre = $('#nombreOtro').val();
+        nombre = 'Direccion ';
 
-        valor = $('#valorOtro').val();
+        valor = $('#valorDireccion').val();
 
-        required = 0;
+        required = 1;
 
     }
 
+    
+    //OTROS
+    else if (tipo == 'otro') {
 
+        if (otrosConfigurados.length == 0) {
+
+            Lobibox.notify('error', {
+                title: 'Debe agregar al menos un atributo.',
+                showClass: 'fadeInDown',
+                hideClass: 'fadeUpDown',
+                delay: 5000,
+                sound: false,
+                icon: false,
+                width: 400
+            });
+
+            return;
+
+        }
+
+        $.ajax({
+
+            type: 'DELETE',
+
+            url: '/atributosEspacios/otros/' + espacioSeleccionado,
+
+            success: function () {
+
+                for (let i = 0; i < otrosConfigurados.length; i++) {
+
+                    $.ajax({
+
+                        type: 'POST',
+
+                        url: '/atributosEspacios',
+
+                        data: {
+
+                            espacio_id: espacioSeleccionado,
+                            nombre: otrosConfigurados[i].nombre,
+                            valor: otrosConfigurados[i].valor,
+                            required: 0
+
+                        }
+
+                    });
+
+                }
+
+                hideModal('configAtributos');
+
+            },
+
+            error: function (response) {
+                console.log(response.responseJSON);
+                Lobibox.notify('error', {
+
+                    title: response.responseJSON?.message ??
+                        'No fue posible actualizar los atributos.',
+
+                    showClass: 'fadeInDown',
+                    hideClass: 'fadeUpDown',
+                    delay: 5000,
+                    sound: false,
+                    icon: false,
+                    width: 400
+
+                });
+
+            }
+
+        });
+
+        return;
+
+    }
     $.ajax({
 
         type: 'POST',
@@ -1060,6 +1210,94 @@ function agregarHorario(dia) {
     iniciarDatePicker();
 
 }
+function pintarOtros() {
+
+    let html = '';
+
+    otrosConfigurados.forEach(function (otro, index) {
+
+        html += `
+
+            <div class="row" style="margin-bottom:10px;">
+
+                <div class="col-md-5">
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        value="${otro.nombre}"
+                        readonly>
+
+                </div>
+
+                <div class="col-md-5">
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        value="${otro.valor}"
+                        readonly>
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <button
+                        type="button"
+                        class="btn btn-danger eliminarOtro"
+                        data-index="${index}">
+
+                        X
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+    $('#listaOtros').html(html);
+
+}
+
+$(document).on('click', '#agregarOtro', function () {
+
+    if (
+        $('#nombreOtro').val() == '' ||
+        $('#valorOtro').val() == ''
+    ) {
+
+        return;
+
+    }
+
+    otrosConfigurados.push({
+
+        nombre: $('#nombreOtro').val(),
+        valor: $('#valorOtro').val()
+
+    });
+
+    $('#nombreOtro').val('');
+
+    $('#valorOtro').val('');
+
+    pintarOtros();
+
+});
+
+$(document).on('click', '.eliminarOtro', function () {
+
+    let index = $(this).data('index');
+
+    otrosConfigurados.splice(index, 1);
+
+    pintarOtros();
+
+});
 
 let contadorHorarios = 0;
 

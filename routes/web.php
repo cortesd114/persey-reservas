@@ -77,6 +77,10 @@ Route::post('/atributos', [RsvAtributosController::class, 'store']);
 
 Route::post('/atributosEspacios', [RsvAtributosEspaciosController::class, 'store']);
 
+Route::delete(
+    '/atributosEspacios/otros/{id}',
+    [RsvAtributosEspaciosController::class,'eliminarOtros']
+);
 Route::get(
     '/atributosEspacios/{id}',
     [RsvAtributosEspaciosController::class, 'show']
