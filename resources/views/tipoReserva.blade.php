@@ -218,7 +218,10 @@
                                             </th>
 
                                             <th class="desktop" style="width:10%;">
-                                                Color
+                                                Color Fondo
+                                            </th>
+                                            <th class="desktop" style="width:10%;">
+                                                Color Texto
                                             </th>
 
                                             <th class="desktop" style="width:10%;">
@@ -258,9 +261,9 @@
                                             <h3 class="text-uppercase">Guardar Tipo de Reserva</h3>
                                             <p><b>Guardar tipo de Reserva</b></p>
                                         </div>
-                                        <div class="panel-body panel-block">
+                                        <div class="panel-body panel-block ">
                                             <div class="panel panel-default">
-                                                <div style="justify-items: end" id="formGuardarTipoReserva">
+                                                <div style="justify-items: center" id="formGuardarTipoReserva">
 
 
                                                 </div>

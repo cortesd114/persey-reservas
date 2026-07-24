@@ -11,6 +11,7 @@ class TipoReserva extends Model
     protected $table = 'rsv_tipo_reserva';
     protected $fillable = [
         'nombre',
-        'color'
+        'color_fondo',
+        'color_texto'
     ];
 }

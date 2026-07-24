@@ -63,7 +63,7 @@ function cargarTabla() {
             { data: 'nombre', className: 'text-left' },
 
             {
-                data: 'color',
+                data: 'color_fondo',
                 className: 'text-center',
                 render: function (data) {
 
@@ -80,6 +80,25 @@ function cargarTabla() {
 
                 }
             },
+            {
+                data: 'color_texto',
+                className: 'text-center',
+                render: function (data) {
+
+                    return `
+                        <div style="
+                            width:25px;
+                            height:25px;
+                            background:${data};
+                            border-radius:50%;
+                            margin:auto;
+                            border:1px solid #999;">
+                        </div>
+                    `;
+
+                }
+            },
+
 
             {
                 data: null,
@@ -135,35 +154,53 @@ function createItem() {
 
             <div class="row">
 
-                <div class="form-group col-md-8">
+                <div class="form-group col-md-12">
 
-                    <label class="obligatorio text-left">
+                    <label class="obligatorio" style="display:block; text-align:left;">
                         Nombre
                     </label>
 
                     <input
                         type="text"
-                        class="form-control text-center"
+                        class="form-control text-left"
                         id="tipoReservaNombre"
                         placeholder="Ej: Sala de juntas">
-
+                        
                 </div>
+                        
+            </div>
 
-                <div class="form-group col-md-4">
+            <div class="row">
+             
+                <div class="form-group col-md-6">
 
                     <label class="obligatorio">
-                        Color
+                        Color Fondo
                     </label>
 
                     <input
                         type="color"
                         class="form-control"
-                        id="tipoReservaColor"
+                        id="tipoReservaColorFondo"
                         value="#2196F3">
 
                 </div>
 
-            </div>
+                <div class="form-group col-md-6">
+
+                    <label class="obligatorio">
+                        Color Texto
+                    </label>
+
+                    <input
+                        type="color"
+                        class="form-control"
+                        id="tipoReservaColorTexto"
+                        value="#2196F3">
+
+                </div>
+                
+            </div> 
 
         </div>
     `;
@@ -190,7 +227,8 @@ function save() {
 
             nombre: $('#tipoReservaNombre').val(),
 
-            color: $('#tipoReservaColor').val()
+            color_fondo: $('#tipoReservaColorFondo').val(),
+            color_texto: $('#tipoReservaColorTexto').val()
 
         },
 
@@ -227,7 +265,8 @@ function save() {
 function isValid() {
 
     const nombre = $('#tipoReservaNombre').val();
-    const color = $('#tipoReservaColor').val();
+    const color_fondo = $('#tipoReservaColorFondo').val();
+    const color_texto = $('#tipoReservaColorTexto').val();
 
     let valid = true;
 
@@ -241,11 +280,18 @@ function isValid() {
 
     }
 
-    if (!color) {
+    if (!color_fondo) {
 
         valid = false;
 
-        mensajes.push('Debe seleccionar un color.');
+        mensajes.push('Debe seleccionar un color para el fondo.');
+
+    }
+    if (!color_texto) {
+
+        valid = false;
+
+        mensajes.push('Debe seleccionar un color para el texto.');
 
     }
 
@@ -323,28 +369,61 @@ function showTipoReserva(tipo) {
         <div class="col-12 col-md-12">
             <div class="row">
 
-                <div class="form-group col-md-8">
-                    <label class="obligatorio">Nombre</label>
+                <div class="form-group col-md-12">
+
+                    <label class="text-left obligatorio " text-align:left;>
+                        Nombre
+                    </label>
+
                     <input
                         type="text"
-                        class="form-control text-center"
-                        id="tipoReservaNombre">
+                        class="form-control text-left"
+                        id="tipoReservaNombre"
+                        placeholder="Ej: Sala de juntas">
+                        
                 </div>
+                        
+            </div>
 
-                <div class="form-group col-md-4 text-center">
-                    <label class="obligatorio">Color</label>
+            <div class="row">
+             
+                <div class="form-group col-md-6">
+
+                    <label class="obligatorio">
+                        Color Fondo
+                    </label>
+
                     <input
                         type="color"
                         class="form-control"
-                        id="tipoReservaColor">
+                        id="tipoReservaColorFondo"
+                        value="#2196F3">
+
                 </div>
 
-            </div>
+                <div class="form-group col-md-6">
+
+                    <label class="obligatorio">
+                        Color Texto
+                    </label>
+
+                    <input
+                        type="color"
+                        class="form-control"
+                        id="tipoReservaColorTexto"
+                        value="#2196F3">
+
+                </div>
+                
+            </div> 
+
+        </div>
         </div>
     `;
 
     $('#tipoReservaNombre').val(tipo.nombre);
-    $('#tipoReservaColor').val(tipo.color);
+    $('#tipoReservaColorFondo').val(tipo.color_fondo);
+    $('#tipoReservaColorTexto').val(tipo.color_texto);
 
     $('#accionar').prop('disabled', false);
 

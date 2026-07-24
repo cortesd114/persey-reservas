@@ -13,7 +13,8 @@ class TipoReservaController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|max:100',
-            'color' => 'required|string|max:7'
+            'color_fondo' => 'required|string|max:7',
+            'color_texto' => 'required|string|max:7'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -33,7 +34,8 @@ class TipoReservaController extends Controller
             DB::beginTransaction();
 
             $tipoReserva->nombre = $request->nombre;
-            $tipoReserva->color = $request->color;
+            $tipoReserva->color_fondo = $request->color_fondo;
+            $tipoReserva->color_texto = $request->color_texto;
 
             $tipoReserva->save();
 
