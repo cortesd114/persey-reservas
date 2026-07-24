@@ -15,7 +15,9 @@ class Espacios extends Model
         'nombre',
         'zona_id',
         'tipo_espacio_id',
-        'estado_espacio_id'
+        'estado_espacio_id',
+        'color_fondo',
+        'color_texto'
     ];
 
     public function zona()

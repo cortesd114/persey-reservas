@@ -82,6 +82,43 @@ function cargarTabla() {
                 data: 'tipo_espacio.nombre',
                 className: 'text-left'
             },
+            {
+                data: 'color_fondo',
+                className: 'text-center',
+                render: function (data) {
+
+                    return `
+                        <div style="
+                            width:25px;
+                            height:25px;
+                            background:${data};
+                            border-radius:50%;
+                            margin:auto;
+                            border:1px solid #999;">
+                        </div>
+                    `;
+
+                }
+            },
+            {
+                data: 'color_texto',
+                className: 'text-center',
+                render: function (data) {
+
+                    return `
+                        <div style="
+                            width:25px;
+                            height:25px;
+                            background:${data};
+                            border-radius:50%;
+                            margin:auto;
+                            border:1px solid #999;">
+                        </div>
+                    `;
+
+                }
+            },
+
 
             {
                 data: 'estado_espacio.nombre',
@@ -174,8 +211,8 @@ async function createItem() {
 
                 <div class="form-group col-md-6 mt-6">
 
-                    <label class="obligatorio">
-                        Nombre
+                    <label class="obligatorio ms-3" style="display:block; text-align:left;">
+                        Nombre : 
                     </label>
 
                     <input
@@ -188,7 +225,7 @@ async function createItem() {
 
                 <div class="form-group col-md-6">
 
-                    <label class="obligatorio">
+                    <label class="obligatorio" style="display:block; text-align:left;">
                         Zona
                     </label>
 
@@ -206,7 +243,7 @@ async function createItem() {
 
                 <div class="form-group col-md-6">
 
-                    <label class="obligatorio">
+                    <label class="obligatorio ms-3" style="display:block; text-align:left;">
                         Tipo de espacio
                     </label>
 
@@ -220,7 +257,7 @@ async function createItem() {
 
                 <div class="form-group col-md-6">
 
-                    <label class="obligatorio">
+                    <label class="obligatorio " style="display:block; text-align:left;">
                         Estado
                     </label>
 
@@ -233,6 +270,37 @@ async function createItem() {
                 </div>
 
             </div>
+
+        <div class="row">
+            <div class="form-group col-md-6">
+
+                    <label class="obligatorio ms-3" style="display:block; text-align:left;">
+                        Color Fondo
+                    </label>
+
+                    <input
+                        type="color"
+                        class="form-control"
+                        id="espacioColorFondo"
+                        value="#2196F3">
+
+                </div>
+
+                <div class="form-group col-md-6">
+
+                    <label class="obligatorio " style="display:block; text-align:left;">
+                        Color Texto
+                    </label>
+
+                    <input
+                        type="color"
+                        class="form-control"
+                        id="espacioColorTexto"
+                        value="#2196F3">
+
+                </div>
+            </div>
+
 
         </div>
 
@@ -256,6 +324,8 @@ function isValid() {
     const zona = $('#zona').val();
     const tipoEspacio = $('#tipoEspacio').val();
     const estadoEspacio = $('#estadoEspacio').val();
+    const color_fondo = $('#espacioColorFondo').val();
+    const color_texto = $('#espacioColorTexto').val();
 
     let valid = true;
 
@@ -279,6 +349,20 @@ function isValid() {
     if (!estadoEspacio) {
         valid = false;
         mensajes.push('Debe seleccionar un estado.');
+    }
+        if (!color_fondo) {
+
+        valid = false;
+
+        mensajes.push('Debe seleccionar un color para el fondo.');
+
+    }
+    if (!color_texto) {
+
+        valid = false;
+
+        mensajes.push('Debe seleccionar un color para el texto.');
+
     }
 
     if (!valid) {
@@ -330,7 +414,10 @@ function save() {
 
             tipo_espacio_id: $('#tipoEspacio').val(),
 
-            estado_espacio_id: $('#estadoEspacio').val()
+            estado_espacio_id: $('#estadoEspacio').val(),
+            color_fondo: $('#espacioColorFondo').val(),
+            color_texto: $('#espacioColorTexto').val()
+            
 
         },
 
@@ -424,7 +511,7 @@ function showEspacio(espacio) {
 
                 <div class="form-group col-md-6">
 
-                    <label class="obligatorio">
+                    <label class="obligatorio ms-3" style="display:block; text-align:left;">
                         Nombre
                     </label>
 
@@ -437,7 +524,7 @@ function showEspacio(espacio) {
 
                 <div class="form-group col-md-6">
 
-                    <label class="obligatorio">
+                    <label class="obligatorio " style="display:block; text-align:left;">
                         Zona
                     </label>
 
@@ -455,7 +542,7 @@ function showEspacio(espacio) {
 
                 <div class="form-group col-md-6">
 
-                    <label class="obligatorio">
+                    <label class="obligatorio ms-3" style="display:block; text-align:left;">
                         Tipo de espacio
                     </label>
 
@@ -469,7 +556,7 @@ function showEspacio(espacio) {
 
                 <div class="form-group col-md-6">
 
-                    <label class="obligatorio">
+                    <label class="obligatorio " style="display:block; text-align:left;">
                         Estado
                     </label>
 
@@ -482,6 +569,40 @@ function showEspacio(espacio) {
                 </div>
 
             </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+
+                    <label class="obligatorio ms-3" style="display:block; text-align:left;">
+                        Color Fondo
+                    </label>
+
+                    <input
+                        type="color"
+                        class="form-control"
+                        id="espacioColorFondo"
+                        value="#2196F3">
+
+                </div>
+
+                <div class="form-group col-md-6">
+
+                    <label class="obligatorio" style="display:block; text-align:left;">
+                        Color Texto
+                    </label>
+
+                    <input
+                        type="color"
+                        class="form-control"
+                        id="espacioColorTexto"
+                        value="#2196F3">
+
+                </div>
+            </div>
+
+
+        </div>
+
+    
 
         </div>
 
@@ -494,15 +615,18 @@ function showEspacio(espacio) {
     llenarSelect('estadoEspacio', estadosEspacios);
 
     $('#nombre').val(espacio.nombre);
-
+    
     $('#zona').val(espacio.zona_id);
-
+    
     $('#tipoEspacio').val(espacio.tipo_espacio_id);
-
+    
     $('#estadoEspacio').val(espacio.estado_espacio_id);
-
+    
     $('#accionar').prop('disabled', false);
+    $('#espacioColorFondo').val(espacio.color_fondo);
+    $('#espacioColorTexto').val(espacio.color_texto);
 
+    
 }
 
 
@@ -980,7 +1104,7 @@ function guardarConfiguracion() {
 
     }
     //direccion
-     else if (tipo == 'Direccion') {
+    else if (tipo == 'Direccion') {
 
         if ($('#valorDireccion').val() == '') {
 
@@ -1007,7 +1131,7 @@ function guardarConfiguracion() {
 
     }
 
-    
+
     //OTROS
     else if (tipo == 'otro') {
 

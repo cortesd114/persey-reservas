@@ -19,7 +19,9 @@ class EspaciosController extends Controller
 
             'tipo_espacio_id' => 'required|exists:rsv_tipos_espacios,id',
 
-            'estado_espacio_id' => 'required|exists:rsv_estados_espacios,id'
+            'estado_espacio_id' => 'required|exists:rsv_estados_espacios,id',
+            'color_fondo' => 'required|string|max:7',
+            'color_texto' => 'required|string|max:7'
 
         ]);
 
@@ -55,6 +57,8 @@ class EspaciosController extends Controller
             $espacio->tipo_espacio_id = $request->tipo_espacio_id;
 
             $espacio->estado_espacio_id = $request->estado_espacio_id;
+            $espacio->color_fondo = $request->color_fondo;
+            $espacio->color_texto = $request->color_texto;
 
             $espacio->save();
 

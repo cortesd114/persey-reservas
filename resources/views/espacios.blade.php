@@ -249,6 +249,12 @@
                                             <th style="width:20%;">
                                                 Tipo
                                             </th>
+                                            <th style="width:20%;">
+                                                Color Fondo
+                                            </th>
+                                            <th style="width:20%;">
+                                                Color Texto
+                                            </th>
 
                                             <th style="width:20%;">
                                                 Estado
